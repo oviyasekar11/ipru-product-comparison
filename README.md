@@ -1,123 +1,115 @@
 # ICICI Prudential — Intelligent Product Comparison & Gap Analysis Tool
 
-> **Team Kappa · IIT Madras · SolveX 2025 · Mentor: Ankita**
+A GenAI-powered platform to compare ICICI Prudential life insurance products against competitors, identify portfolio gaps, and surface market white spaces.
 
-A GenAI-powered tool that compares ICICI Prudential life insurance products against competitors, identifies feature gaps, and recommends the best plan for each customer profile.
+---
+
+## Overview
+
+This project was built for **SolveX 2025 — IIT Madras Hackathon**, sponsored by ICICI Prudential Life Insurance.
+
+**Problem Statement:** Currently, designing new products and benchmarking against competitors is a manual, time-consuming process involving reading through long brochures and regulatory guidelines. This tool automates that process using GenAI.
+
+---
+
+## Features
+
+### Customer Portal
+- **Profile Quiz** — 8-question onboarding wizard that captures life goals, risk appetite, tenure, and rider preferences
+- **Feature Search** — Natural language search ("I am 30 and looking for a term plan with ROP") matched against IPru and competitor products
+- **Product Results** — Ranked product cards with match scores, strengths, and gaps highlighted
+- **Gap Analysis** — Visual radar + bar charts, side-by-side feature matrix, and market white space insights
+- **Peer-to-Peer Comparison** — Select any IPru product and up to 3 competitor products; get a detailed feature matrix, similarity scores, gap summary, and opportunity cards
+
+### Admin Portal
+- **PDF Uploader** — Drag-and-drop brochure upload with insurer + category tagging; simulates the indexing pipeline
+- **Web Scraper Dashboard** — Monitor and trigger automated monthly scraping from all insurer websites
+- **Knowledge Base** — Browse, search, and filter all indexed product documents
+
+---
+
+## Tech Stack
+
+| Layer | Technology |
+|-------|-----------|
+| Frontend | React 18, Vite, Tailwind CSS |
+| Charts | Recharts |
+| Icons | Lucide React |
+| Routing | React Router v6 |
+| PDF Scraper | Python (separate repo — [Rutvik0003/IPRU_Chatbot](https://github.com/Rutvik0003/IPRU_Chatbot)) |
+| Backend API | FastAPI (in progress) |
 
 ---
 
 ## Project Structure
 
 ```
-icici-repo/
-├── frontend/          # React + Vite + Tailwind CSS
-│   └── src/
-│       ├── pages/     # Landing, CustomerPortal, AdminPortal
-│       └── components/
-│           ├── customer/   # Onboarding, FeatureSearch, ProductResults, GapAnalysis
-│           ├── admin/      # PDFUploader, ScraperDashboard, KnowledgeBase
-│           └── shared/     # Navbar, ProgressBar
-└── backend/           # FastAPI Python
-    ├── main.py
-    ├── classifier/    # PDF processing pipeline + worker queue
-    ├── scraper/       # Web scraper for insurer websites
-    ├── models/        # Pydantic data models
-    └── shared/        # Async queue manager
+ipru-product-comparison/
+├── frontend/
+│   ├── src/
+│   │   ├── components/
+│   │   │   ├── customer/
+│   │   │   │   ├── Onboarding.jsx       # 8-step profile quiz
+│   │   │   │   ├── FeatureSearch.jsx    # NL search interface
+│   │   │   │   ├── ProductResults.jsx   # Ranked results cards
+│   │   │   │   ├── GapAnalysis.jsx      # Charts + feature matrix
+│   │   │   │   └── PeerComparison.jsx   # Peer-to-peer selector + comparison
+│   │   │   ├── admin/
+│   │   │   │   ├── PDFUploader.jsx      # Drag-and-drop PDF intake
+│   │   │   │   ├── ScraperDashboard.jsx # Scraper monitor + trigger
+│   │   │   │   └── KnowledgeBase.jsx    # Document browser
+│   │   │   └── shared/
+│   │   │       ├── Navbar.jsx
+│   │   │       └── ProgressBar.jsx
+│   │   ├── pages/
+│   │   │   ├── Landing.jsx
+│   │   │   ├── CustomerPortal.jsx
+│   │   │   └── AdminPortal.jsx
+│   │   └── services/
+│   │       └── api.js                   # Mock ↔ real API switch
+│   └── package.json
 ```
 
 ---
 
-## Quick Start
+## Getting Started
 
-### Frontend
 ```bash
 cd frontend
 npm install
 npm run dev
-# → http://localhost:3000
 ```
 
-### Backend
-```bash
-cd backend
-python -m venv venv
-# Windows:
-venv\Scripts\activate
-# Mac/Linux:
-source venv/bin/activate
+Open [http://localhost:5173](http://localhost:5173)
 
-pip install -r requirements.txt
-cp .env.example .env   # add your API keys
-uvicorn main:app --reload --port 8000
-# → http://localhost:8000
+### Switching to real backend
+
+In `frontend/src/services/api.js`, set:
+```js
+const USE_MOCK = false
+```
+
+And add `frontend/.env`:
+```
+VITE_API_URL=http://localhost:8000
 ```
 
 ---
 
-## Key Features
+## Team
 
-### Customer Portal (`/customer`)
-| Step | Feature |
-|------|---------|
-| 1 | **Onboarding Quiz** — 8 questions (90 sec), profile-based matching |
-| 2 | **Feature Search** — Natural language query (e.g. "term plan with ROP for 30yr old") |
-| 3 | **Product Results** — Ranked match scores, IPru vs. competitors |
-| 4 | **Gap Analysis** — Radar chart, feature matrix, market white spaces |
+**Team Kappa — IIT Madras · SolveX 2025**
 
-### Admin Portal (`/admin`)
-| Tab | Feature |
-|-----|---------|
-| Upload PDFs | Drag-and-drop PDF upload → classifier queue |
-| Web Scraper | Monitor & trigger monthly scraper per insurer |
-| Knowledge Base | Search, filter, view all indexed documents |
+- **Frontend** — Oviya Sekar
+- **PDF Scraper & Classifier** — Rutvik ([IPRU_Chatbot](https://github.com/Rutvik0003/IPRU_Chatbot))
+- **Backend API** — (in progress)
 
 ---
 
-## Architecture
+## Roadmap
 
-```
-User Query
-    │
-    ▼
-Feature Search (NLP / embeddings)
-    │
-    ▼
-Vector DB (ChromaDB) ◄── PDF Pipeline ◄── Web Scraper
-    │                                            │
-    ▼                                       Monthly cron
-Ranked Products + Gap Analysis
-```
-
-### PDF Processing Pipeline
-1. PDF uploaded or scraped → added to `asyncio.Queue`
-2. 3 async **classifier workers** dequeue and process
-3. `pipeline.py` extracts text, detects features via keyword matching
-4. Features stored as JSON + indexed in ChromaDB
-
----
-
-## API Endpoints
-
-| Method | Path | Description |
-|--------|------|-------------|
-| POST | `/api/upload` | Upload a PDF brochure |
-| POST | `/api/scraper/run` | Trigger web scraper |
-| GET | `/api/scraper/status` | Scraper status per insurer |
-| POST | `/api/search` | Natural language product search |
-| POST | `/api/onboarding/match` | Match products from quiz answers |
-| POST | `/api/compare` | Side-by-side product comparison |
-| GET | `/api/kb/documents` | List knowledge base documents |
-| GET | `/api/health` | System health check |
-
----
-
-## Tech Stack
-
-| Layer | Tech |
-|-------|------|
-| Frontend | React 18, Vite, Tailwind CSS, Recharts, React Router |
-| Backend | FastAPI, Python 3.11+, asyncio |
-| AI/ML | LangChain, ChromaDB, Sentence Transformers |
-| PDF | pdfplumber, PyPDF2 |
-| Scraping | httpx, BeautifulSoup4 |
-| Scheduler | APScheduler (monthly refresh) |
+- [ ] Connect live FastAPI backend
+- [ ] Integrate vector search (RAG) for natural language matching
+- [ ] Customer sentiment analysis from app store reviews
+- [ ] Automated monthly PDF refresh pipeline
+- [ ] Export gap analysis as PDF report
