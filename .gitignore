@@ -1,0 +1,20 @@
+# Frontend
+frontend/node_modules/
+frontend/dist/
+frontend/.env
+
+# Backend
+backend/__pycache__/
+backend/**/__pycache__/
+backend/*.pyc
+backend/uploads/
+backend/chroma_db/
+backend/.env
+*.egg-info/
+.venv/
+venv/
+
+# General
+.DS_Store
+Thumbs.db
+*.log
