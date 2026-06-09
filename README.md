@@ -96,13 +96,6 @@ VITE_API_URL=http://localhost:8000
 
 ---
 
-## Team
-
-**Team Kappa — IIT Madras · SolveX 2025**
-
-- **Frontend** — Oviya Sekar
-- **PDF Scraper & Classifier** — Rutvik ([IPRU_Chatbot](https://github.com/Rutvik0003/IPRU_Chatbot))
-- **Backend API** — (in progress)
 
 ---
 
