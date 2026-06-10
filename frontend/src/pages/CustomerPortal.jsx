@@ -1,14 +1,12 @@
 import { useState } from 'react'
-import { useLocation } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import Navbar from '../components/shared/Navbar'
 import Onboarding from '../components/customer/Onboarding'
 import FeatureSearch from '../components/customer/FeatureSearch'
 import ProductResults from '../components/customer/ProductResults'
 import GapAnalysis from '../components/customer/GapAnalysis'
 import PeerComparison from '../components/customer/PeerComparison'
-import ChatAssistant from '../components/customer/ChatAssistant'
-import InsuranceCatalog from '../components/customer/InsuranceCatalog'
-import { ClipboardList, Search, BarChart3, ArrowRightLeft, MessageCircle, ListFilter } from 'lucide-react'
+import { ClipboardList, Search, BarChart3, ArrowRightLeft, ChevronRight } from 'lucide-react'
 
 const TABS = [
   { id: 'onboard',  label: 'Profile Quiz',    icon: ClipboardList },
@@ -16,16 +14,10 @@ const TABS = [
   { id: 'results',  label: 'Results',          icon: BarChart3 },
   { id: 'gap',      label: 'Gap Analysis',     icon: BarChart3 },
   { id: 'compare',  label: 'Peer Compare',     icon: ArrowRightLeft },
-  { id: 'chat',     label: 'AI Chat',          icon: MessageCircle },
-  { id: 'catalog',  label: 'All Plans',        icon: ListFilter },
 ]
 
-// Tabs always reachable from anywhere, regardless of onboarding progress
-const QUICK_ACCESS = ['chat', 'catalog', 'compare']
-
 export default function CustomerPortal() {
-  const location = useLocation()
-  const [flow, setFlow] = useState(location.state?.initialFlow || 'onboard')
+  const [flow, setFlow] = useState('onboard')
   const [quizAnswers, setQuizAnswers] = useState(null)
   const [products, setProducts] = useState([])
   const [features, setFeatures] = useState([])
@@ -47,7 +39,7 @@ export default function CustomerPortal() {
     setFlow('gap')
   }
 
-  // Tabs shown in the step bar (exclude onboard once flow has started)
+  // Which tabs are visible in the step bar (exclude onboard when not on it)
   const visibleTabs = flow === 'onboard'
     ? []
     : TABS.filter(t => t.id !== 'onboard')
@@ -60,19 +52,18 @@ export default function CustomerPortal() {
       {flow !== 'onboard' && (
         <div className="bg-white border-b border-gray-100 px-4 py-3 sticky top-16 z-40">
           <div className="max-w-5xl mx-auto flex items-center gap-1 flex-wrap">
-            {visibleTabs.map((tab) => {
+            {visibleTabs.map((tab, i) => {
               const Icon = tab.icon
               const active = tab.id === flow
               const done = stepIndex > TABS.findIndex(s => s.id === tab.id)
-              const reachable = done || active || QUICK_ACCESS.includes(tab.id)
               return (
                 <button
                   key={tab.id}
-                  onClick={() => reachable && setFlow(tab.id)}
+                  onClick={() => (done || active) && setFlow(tab.id)}
                   className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors
                     ${active
                       ? 'bg-ipru-blue text-white'
-                      : reachable
+                      : done
                         ? 'text-ipru-blue hover:bg-blue-50'
                         : 'text-gray-400 cursor-default'
                     }`}
@@ -82,6 +73,17 @@ export default function CustomerPortal() {
                 </button>
               )
             })}
+
+            {/* Peer Compare shortcut always accessible */}
+            {flow !== 'compare' && (
+              <button
+                onClick={() => setFlow('compare')}
+                className="ml-auto flex items-center gap-1.5 text-xs text-ipru-orange font-semibold hover:underline"
+              >
+                <ArrowRightLeft className="w-3.5 h-3.5" />
+                Peer Compare
+              </button>
+            )}
           </div>
         </div>
       )}
@@ -93,8 +95,6 @@ export default function CustomerPortal() {
         {flow === 'results'  && <ProductResults answers={quizAnswers} onCompare={handleCompare} />}
         {flow === 'gap'      && <GapAnalysis products={products} features={features} />}
         {flow === 'compare'  && <PeerComparison />}
-        {flow === 'chat'     && <ChatAssistant />}
-        {flow === 'catalog'  && <InsuranceCatalog />}
       </div>
     </div>
   )

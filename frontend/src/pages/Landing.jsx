@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom'
-import { Shield, Users, BarChart3, Search, Upload, ArrowRight, Sparkles, Target, TrendingUp, MessageCircle, ListFilter } from 'lucide-react'
+import { Shield, Users, BarChart3, Search, Upload, ArrowRight, Sparkles, Target, TrendingUp } from 'lucide-react'
 
 export default function Landing() {
   const navigate = useNavigate()
@@ -76,24 +76,6 @@ export default function Landing() {
             <div className="flex items-center gap-2 text-blue-300 text-sm font-semibold group-hover:gap-3 transition-all">
               Manage Data <ArrowRight className="w-4 h-4" />
             </div>
-          </button>
-        </div>
-
-        {/* Quick access — chat & catalog */}
-        <div className="flex flex-wrap items-center justify-center gap-3 mb-12">
-          <button
-            onClick={() => navigate('/customer', { state: { initialFlow: 'chat' } })}
-            className="flex items-center gap-2 bg-ipru-orange/15 hover:bg-ipru-orange/25 border border-ipru-orange/30 text-ipru-orange-light text-sm font-semibold px-5 py-2.5 rounded-full transition-colors"
-          >
-            <MessageCircle className="w-4 h-4" />
-            Try AI Chat Assistant
-          </button>
-          <button
-            onClick={() => navigate('/customer', { state: { initialFlow: 'catalog' } })}
-            className="flex items-center gap-2 bg-white/10 hover:bg-white/20 border border-white/20 text-white text-sm font-semibold px-5 py-2.5 rounded-full transition-colors"
-          >
-            <ListFilter className="w-4 h-4" />
-            Browse All Plans
           </button>
         </div>
 
